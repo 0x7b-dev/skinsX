@@ -30,7 +30,7 @@ public:
 		WriteProcessMemory(hProcess, (LPVOID)address, &value, sizeof(value), NULL);
 	}
 
-	HANDLE GetHandleByProcessName(char* processName, DWORD dwAccessRights)
+	HANDLE GetHandleByProcessName(const char* processName, DWORD dwAccessRights)
 	{
 		DWORD pID = NULL;
 		HANDLE hProcess = INVALID_HANDLE_VALUE;
@@ -52,7 +52,7 @@ public:
 		return hProcess;
 	}
 
-	HANDLE GetHandleByWindowName(char* windowName, DWORD dwAccessRights)
+	HANDLE GetHandleByWindowName(const char* windowName, DWORD dwAccessRights)
 	{
 		DWORD pID = NULL;
 		HANDLE hProcess = INVALID_HANDLE_VALUE;
@@ -66,7 +66,7 @@ public:
 		return hProcess;
 	}
 
-	DWORD GetProcessIdByProcessName(char* processName)
+	DWORD GetProcessIdByProcessName(const char* processName)
 	{
 		DWORD pID = NULL;
 		HANDLE ss = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
@@ -86,7 +86,7 @@ public:
 		return pID;
 	}
 
-	DWORD GetProcessIdByWindowName(char* windowName)
+	DWORD GetProcessIdByWindowName(const char* windowName)
 	{
 		DWORD pID = NULL;
 		HWND hW = FindWindowA(NULL, windowName);
@@ -95,7 +95,7 @@ public:
 		return pID;
 	}
 
-	DWORD GetModuleBaseAddress(DWORD pID, char* moduleName)
+	DWORD GetModuleBaseAddress(DWORD pID, const char* moduleName)
 	{
 		DWORD ModuleBaseAddress = NULL;
 		HANDLE ss = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, pID);
