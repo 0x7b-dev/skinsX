@@ -22,8 +22,8 @@
 * viewmodel index offsets located in the sv_precacheinfo list
 * these usually change after new knives are introduced to the game
 */
-#define precache_bayonet_ct 64 /* v_knife_bayonet.mdl - v_knife_default_ct.mdl */
-#define precache_bayonet_t 40 /* v_knife_bayonet.mdl - v_knife_default_t.mdl */
+#define precache_bayonet_ct 64 // v_knife_bayonet.mdl - v_knife_default_ct.mdl
+#define precache_bayonet_t 40 // v_knife_bayonet.mdl - v_knife_default_t.mdl
 
 /*
 * nbq's memory class
