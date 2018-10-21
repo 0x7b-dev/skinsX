@@ -1,6 +1,6 @@
 ![Screenshot](https://i.imgur.com/qyrJeM4.jpg)
 
-# External CSGO Knife/Skin Changer
+# skinsX - External knife/skin changer for CSGO
 
 ## How it works
 
