@@ -49,48 +49,13 @@ enum knifeDefinitionIndex               // id
 	WEAPON_KNIFE_STILETTO = 522,        // 12
 	WEAPON_KNIFE_WIDOWMAKER = 523       // 13
 };
-int GetKnifeID(const short itemDef)
-{
-	switch (itemDef)
-	{
-		default:
-		case WEAPON_KNIFE_BAYONET:
-			return 0;
-		case WEAPON_KNIFE_FLIP:
-			return 1;
-		case WEAPON_KNIFE_GUT:
-			return 2;
-		case WEAPON_KNIFE_KARAMBIT:
-			return 3;
-		case WEAPON_KNIFE_M9_BAYONET:
-			return 4;
-		case WEAPON_KNIFE_TACTICAL:
-			return 5;
-		case WEAPON_KNIFE_FALCHION:
-			return 6;
-		case WEAPON_KNIFE_SURVIVAL_BOWIE:
-			return 7;
-		case WEAPON_KNIFE_BUTTERFLY:
-			return 8;
-		case WEAPON_KNIFE_PUSH:
-			return 9;
-		case WEAPON_KNIFE_URSUS:
-			return 10;
-		case WEAPON_KNIFE_GYPSY_JACKKNIFE:
-			return 11;
-		case WEAPON_KNIFE_STILETTO:
-			return 12;
-		case WEAPON_KNIFE_WIDOWMAKER:
-			return 13;
-	}
-}
-void skinsX(HANDLE csgo, DWORD client, short itemDef, DWORD paintKit)
+
+void skinsX(HANDLE csgo, DWORD client, int knifeID, short itemDef, DWORD paintKit)
 {
 	const int itemIDHigh = -1;
 	const int entityQuality = 3;
 	const float fallbackWear = 0.0001f;
 
-	int knifeID = GetKnifeID(itemDef);
 	int knifeIDOffset = knifeID < 10 ? 0 : 1; /* precache offset id by 1 for new knives */
 
 	DWORD cachedPlayer = 0;
@@ -177,6 +142,30 @@ void skinsX(HANDLE csgo, DWORD client, short itemDef, DWORD paintKit)
 		mem.WriteMemory<DWORD>(csgo, knifeEntity + m_nModelIndex, modelIndex);
 	}
 }
+void skinsPrint(const char* title, const char* name[], DWORD sz, DWORD x)
+{
+	Sleep(100);
+	printf("%s %s %s %s\t\t\r", title, x > 0 ? "<" : "|", name[x], x < sz ? ">" : "|");
+}
+DWORD skinsSelect(const char* title, const char* name[], DWORD sz)
+{
+	DWORD x = 0; // index of current item
+	skinsPrint(title, name, sz, x);
+
+	while (!GetAsyncKeyState(VK_RETURN))
+	{
+		if (GetAsyncKeyState(VK_RIGHT) && x < sz)
+		{
+			skinsPrint(title, name, sz, ++x);
+		}
+		else if (GetAsyncKeyState(VK_LEFT) && x > 0)
+		{
+			skinsPrint(title, name, sz, --x);
+		}
+	}
+
+	return x;
+}
 
 int main()
 {
@@ -204,10 +193,64 @@ int main()
 	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPID);
 	printf("Handle to csgo.exe process... 0x%X\n", (DWORD)hProcess);
 
+	/* arrays for our menu */
+
+	const char* knifeNames[] = { "Bayonet",
+		"Flip Knife",
+		"Gut Knife",
+		"Karambit",
+		"M9 Bayonet",
+		"Huntsman Knife",
+		"Falchion Knife",
+		"Bowie Knife",
+		"Butterfly Knife",
+		"Shadow Daggers",
+		"Ursus Knife",
+		"Navaja Knife",
+		"Stiletto Knife",
+		"Talon Knife" };
+
+	short knifeIDs[] = { WEAPON_KNIFE_BAYONET,
+		WEAPON_KNIFE_FLIP,
+		WEAPON_KNIFE_GUT,
+		WEAPON_KNIFE_KARAMBIT,
+		WEAPON_KNIFE_M9_BAYONET,
+		WEAPON_KNIFE_TACTICAL,
+		WEAPON_KNIFE_FALCHION,
+		WEAPON_KNIFE_SURVIVAL_BOWIE,
+		WEAPON_KNIFE_BUTTERFLY,
+		WEAPON_KNIFE_PUSH,
+		WEAPON_KNIFE_URSUS,
+		WEAPON_KNIFE_GYPSY_JACKKNIFE,
+		WEAPON_KNIFE_STILETTO,
+		WEAPON_KNIFE_WIDOWMAKER };
+
+	/* some sample skins to choose from */
+
+	const char* skinNames[] = { "Doppler Ruby",
+		"Doppler Sapphire",
+		"Doppler Emerald",
+		"Tiger Tooth",
+		"Crimson Web",
+		"Fade" };
+
+	DWORD skinIDs[] = { 415,
+		416,
+		568,
+		409,
+		12,
+		38 };
+
+	DWORD knifeID = skinsSelect("Select your knife model:", knifeNames, sizeof(knifeIDs) / sizeof(short) - 1);
+	printf("\n");
+	DWORD skinID = skinsSelect("Select your knife skin:", skinNames, sizeof(skinIDs) / sizeof(DWORD) - 1);
+	printf("\n");
+
+	printf("Selected knife: %s | %s\n", knifeNames[knifeID], skinNames[skinID]);
+
 	if (hProcess != INVALID_HANDLE_VALUE)
 	{
-		/* give ourselves a karambit sapphire */
-		skinsX(hProcess, dwClient, WEAPON_KNIFE_KARAMBIT, 416);
+		skinsX(hProcess, dwClient, knifeID, knifeIDs[knifeID], skinIDs[skinID]);
 	}
 
 	if (hProcess) { CloseHandle(hProcess); }
