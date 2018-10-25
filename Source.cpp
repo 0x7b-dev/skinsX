@@ -5,8 +5,8 @@
 * necessary offsets and netvars for our knife / skin changer
 * some of these need to be updated after each game update
 */
-#define m_dwLocalPlayer 0xC5F89C
-#define m_dwEntityList 0x4C3C4F4
+#define m_dwLocalPlayer 0xC618AC
+#define m_dwEntityList 0x4C3E624
 #define m_hViewModel 0x32DC
 #define m_iViewModelIndex 0x3210
 #define m_flFallbackWear 0x31B0
@@ -22,8 +22,8 @@
 * offsets between viewmodel indexes located in the sv_precacheinfo list
 * these usually change after new knives are introduced to the game
 */
-#define precache_bayonet_ct 64 // = v_knife_bayonet.mdl - v_knife_default_ct.mdl
-#define precache_bayonet_t 40 // = v_knife_bayonet.mdl - v_knife_default_t.mdl
+#define precache_bayonet_ct 67 // = v_knife_bayonet.mdl - v_knife_default_ct.mdl
+#define precache_bayonet_t 43 // = v_knife_bayonet.mdl - v_knife_default_t.mdl
 
 /*
 * nbq's memory class
@@ -134,8 +134,8 @@ void skinsX(HANDLE csgo, DWORD client, int knifeID, short itemDef, DWORD paintKi
 		else if (weaponID != itemDef || modelIndex == 0) { continue; }
 
 		/* handle to viewmodel entity we will use to change the knife viewmodel index */
-		DWORD knifeViewmodel = mem.ReadMemory<DWORD>(csgo, localPlayer + m_hViewModel) & 0xfff;
-		DWORD knifeEntity = mem.ReadMemory<DWORD>(csgo, client + m_dwEntityList + (knifeViewmodel - 1) * 0x10);
+		DWORD knifeViewModel = mem.ReadMemory<DWORD>(csgo, localPlayer + m_hViewModel) & 0xfff;
+		DWORD knifeEntity = mem.ReadMemory<DWORD>(csgo, client + m_dwEntityList + (knifeViewModel - 1) * 0x10);
 		if (knifeEntity == 0) { continue; }
 
 		/* change our current viewmodel but only if localplayer is holding a knife in hands */
@@ -231,15 +231,19 @@ int main()
 		"Doppler Sapphire",
 		"Doppler Emerald",
 		"Tiger Tooth",
+		"Slaughter",
 		"Crimson Web",
-		"Fade" };
+		"Fade",
+		"Marble Fade" };
 
 	DWORD skinIDs[] = { 415,
 		416,
 		568,
 		409,
+		59,
 		12,
-		38 };
+		38,
+		413 };
 
 	DWORD knifeID = skinsSelect("Select your knife model:", knifeNames, sizeof(knifeIDs) / sizeof(short) - 1);
 	printf("\n");
