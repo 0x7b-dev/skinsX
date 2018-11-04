@@ -6,7 +6,7 @@
 * some of these need to be updated after each game update
 */
 #define m_dwLocalPlayer 0xC618AC
-#define m_dwEntityList 0x4C3E624
+#define m_dwEntityList 0x4C3E674
 #define m_hViewModel 0x32DC
 #define m_iViewModelIndex 0x3210
 #define m_flFallbackWear 0x31B0
@@ -80,12 +80,12 @@ void skinsX(HANDLE csgo, DWORD client, int knifeID, short itemDef, DWORD paintKi
 			for (int i = 0; i < 8; i++)
 			{
 				/* handle to weapon entity in the current slot */
-				DWORD myWeapons = mem.ReadMemory<DWORD>(csgo, localPlayer + m_hMyWeapons + i * 0x4) & 0xfff;
-				DWORD weaponEntity = mem.ReadMemory<DWORD>(csgo, client + m_dwEntityList + (myWeapons - 1) * 0x10);
-				if (weaponEntity == 0) { continue; }
+				DWORD currentWeapon = mem.ReadMemory<DWORD>(csgo, localPlayer + m_hMyWeapons + i * 0x4) & 0xfff;
+				currentWeapon = mem.ReadMemory<DWORD>(csgo, client + m_dwEntityList + (currentWeapon - 1) * 0x10);
+				if (currentWeapon == 0) { continue; }
 
 				/* id of the weapon in the current slot */
-				short weaponID = mem.ReadMemory<short>(csgo, weaponEntity + m_iItemDefinitionIndex);
+				short weaponID = mem.ReadMemory<short>(csgo, currentWeapon + m_iItemDefinitionIndex);
 
 				DWORD fallbackPaint = paintKit;
 				if (weaponID == 1) { fallbackPaint = 37; } /* Desert Eagle | Blaze */
@@ -98,31 +98,31 @@ void skinsX(HANDLE csgo, DWORD client, int knifeID, short itemDef, DWORD paintKi
 				else
 				{
 					/* knife-specific memory writes */
-					mem.WriteMemory<short>(csgo, weaponEntity + m_iItemDefinitionIndex, itemDef);
-					mem.WriteMemory<DWORD>(csgo, weaponEntity + m_nModelIndex, modelIndex);
-					mem.WriteMemory<DWORD>(csgo, weaponEntity + m_iViewModelIndex, modelIndex);
-					mem.WriteMemory<int>(csgo, weaponEntity + m_iEntityQuality, entityQuality);
+					mem.WriteMemory<short>(csgo, currentWeapon + m_iItemDefinitionIndex, itemDef);
+					mem.WriteMemory<DWORD>(csgo, currentWeapon + m_nModelIndex, modelIndex);
+					mem.WriteMemory<DWORD>(csgo, currentWeapon + m_iViewModelIndex, modelIndex);
+					mem.WriteMemory<int>(csgo, currentWeapon + m_iEntityQuality, entityQuality);
 				}
 
 				/* memory writes necessary for both knives and other weapons in slots */
-				mem.WriteMemory<int>(csgo, weaponEntity + m_iItemIDHigh, itemIDHigh);
-				mem.WriteMemory<DWORD>(csgo, weaponEntity + m_nFallbackPaintKit, fallbackPaint);
-				mem.WriteMemory<float>(csgo, weaponEntity + m_flFallbackWear, fallbackWear);
+				mem.WriteMemory<int>(csgo, currentWeapon + m_iItemIDHigh, itemIDHigh);
+				mem.WriteMemory<DWORD>(csgo, currentWeapon + m_nFallbackPaintKit, fallbackPaint);
+				mem.WriteMemory<float>(csgo, currentWeapon + m_flFallbackWear, fallbackWear);
 			}
 		}
 
 		/* handle to weapon entity we are currently holding in hands */
 		DWORD activeWeapon = mem.ReadMemory<DWORD>(csgo, localPlayer + m_hActiveWeapon) & 0xfff;
-		DWORD weaponEntity = mem.ReadMemory<DWORD>(csgo, client + m_dwEntityList + (activeWeapon - 1) * 0x10);
-		if (weaponEntity == 0) { continue; }
+		activeWeapon = mem.ReadMemory<DWORD>(csgo, client + m_dwEntityList + (activeWeapon - 1) * 0x10);
+		if (activeWeapon == 0) { continue; }
 
 		/* id of weapon we are currently holding in hands */
-		short weaponID = mem.ReadMemory<short>(csgo, weaponEntity + m_iItemDefinitionIndex);
+		short weaponID = mem.ReadMemory<short>(csgo, activeWeapon + m_iItemDefinitionIndex);
 
 		/* viewmodel id of the weapon in our hands (default ct knife should usually be around 300) */
-		int weaponViewModelID = mem.ReadMemory<int>(csgo, weaponEntity + m_iViewModelIndex);
+		int weaponViewModelID = mem.ReadMemory<int>(csgo, activeWeapon + m_iViewModelIndex);
 
-		/* a way to calculate the correct modelindex for different servers / maps / teams */
+		/* calculate the correct modelindex using the index of default knives and the precache list */
 		if (weaponID == WEAPON_KNIFE && weaponViewModelID > 0)
 		{
 			modelIndex = weaponViewModelID + precache_bayonet_ct + 3 * knifeID + knifeIDOffset;
@@ -135,19 +135,19 @@ void skinsX(HANDLE csgo, DWORD client, int knifeID, short itemDef, DWORD paintKi
 
 		/* handle to viewmodel entity we will use to change the knife viewmodel index */
 		DWORD knifeViewModel = mem.ReadMemory<DWORD>(csgo, localPlayer + m_hViewModel) & 0xfff;
-		DWORD knifeEntity = mem.ReadMemory<DWORD>(csgo, client + m_dwEntityList + (knifeViewModel - 1) * 0x10);
-		if (knifeEntity == 0) { continue; }
+		knifeViewModel = mem.ReadMemory<DWORD>(csgo, client + m_dwEntityList + (knifeViewModel - 1) * 0x10);
+		if (knifeViewModel == 0) { continue; }
 
 		/* change our current viewmodel but only if localplayer is holding a knife in hands */
-		mem.WriteMemory<DWORD>(csgo, knifeEntity + m_nModelIndex, modelIndex);
+		mem.WriteMemory<DWORD>(csgo, knifeViewModel + m_nModelIndex, modelIndex);
 	}
 }
-void skinsPrint(const char* title, const char* name[], DWORD sz, DWORD x)
+void skinsPrint(const char* title, char* name[], DWORD sz, DWORD x)
 {
 	Sleep(100);
-	printf("%s %s %s %s\t\t\r", title, x > 0 ? "<" : "|", name[x], x < sz ? ">" : "|");
+	printf("%s %s %s %s\t\t\t\r", title, x > 0 ? "<" : "|", name[x], x < sz ? ">" : "|");
 }
-DWORD skinsSelect(const char* title, const char* name[], DWORD sz)
+DWORD skinsSelect(const char* title, char* name[], DWORD sz)
 {
 	DWORD x = 0; // index of current item
 	skinsPrint(title, name, sz, x);
@@ -165,6 +165,36 @@ DWORD skinsSelect(const char* title, const char* name[], DWORD sz)
 	}
 
 	return x;
+}
+DWORD skinsLoad(char** names[], DWORD* ids[])
+{
+	DWORD i = 0;
+	FILE* fp;
+
+	if (fopen_s(&fp, "skins.txt", "r") == 0)
+	{
+		char line[64];
+
+		while (fgets(line, 64, fp) != 0)
+		{
+			DWORD id;
+			char name[64];
+
+			if (sscanf_s(line, "%03d %63[^\n]", &id, &name, sizeof(name)) != 2) { continue; }
+
+			*ids = (DWORD*)realloc(*ids, (i + 1) * sizeof(DWORD));
+			(*ids)[i] = id;
+
+			*names = (char**)realloc(*names, (i + 1) * sizeof(char*));
+			(*names)[i] = _strdup(name);
+
+			i++;
+		}
+
+		fclose(fp);
+	}
+
+	return i;
 }
 
 int main()
@@ -195,7 +225,7 @@ int main()
 
 	/* arrays for our menu */
 
-	const char* knifeNames[] = { "Bayonet",
+	char* knifeNames[] = { "Bayonet",
 		"Flip Knife",
 		"Gut Knife",
 		"Karambit",
@@ -225,29 +255,21 @@ int main()
 		WEAPON_KNIFE_STILETTO,
 		WEAPON_KNIFE_WIDOWMAKER };
 
-	/* some sample skins to choose from */
+	DWORD* skinIDs = 0;
+	char** skinNames = 0;
 
-	const char* skinNames[] = { "Doppler Ruby",
-		"Doppler Sapphire",
-		"Doppler Emerald",
-		"Tiger Tooth",
-		"Slaughter",
-		"Crimson Web",
-		"Fade",
-		"Marble Fade" };
+	DWORD count = skinsLoad(&skinNames, &skinIDs);
+	if (!count)
+	{
+		printf("Error loading skins from skins.txt!\n");
+		goto end;
+	}
 
-	DWORD skinIDs[] = { 415,
-		416,
-		568,
-		409,
-		59,
-		12,
-		38,
-		413 };
+	printf("Loaded %d skins from skins.txt.\n", count);
 
-	DWORD knifeID = skinsSelect("Select your knife model:", knifeNames, sizeof(knifeIDs) / sizeof(short) - 1);
+	DWORD knifeID = skinsSelect("Select your knife model:", knifeNames, sizeof(knifeIDs) / sizeof(knifeIDs[0]) - 1);
 	printf("\n");
-	DWORD skinID = skinsSelect("Select your knife skin:", skinNames, sizeof(skinIDs) / sizeof(DWORD) - 1);
+	DWORD skinID = skinsSelect("Select your knife skin:", skinNames, count - 1);
 	printf("\n");
 
 	printf("Selected knife: %s | %s\n", knifeNames[knifeID], skinNames[skinID]);
@@ -257,7 +279,10 @@ int main()
 		skinsX(hProcess, dwClient, knifeID, knifeIDs[knifeID], skinIDs[skinID]);
 	}
 
+end:
 	if (hProcess) { CloseHandle(hProcess); }
+	if (skinIDs) { free(skinIDs); }
+	if (skinNames) { free(skinNames); }
 
 	return 0;
 }
