@@ -5,6 +5,7 @@
 ## How it works
 
 This is a basic external skin changer that checks all slots under m_hMyWeapons for matching weapon ID's and applies skin (and model) values accordingly. This can be and is done independent to which weapon the local player is holding, and it's the reason why we don't have to fall back to using fullupdate to apply skins. Active weapon is also checked to help calculate and write the correct viewmodel index for our chosen knife.
+
 Credits to @tracersgta on UC for the neat skin list: https://www.unknowncheats.me/forum/counterstrike-global-offensive/300854-skin-list-ids-comments.html
 
 ## Important
