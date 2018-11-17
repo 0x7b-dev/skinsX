@@ -5,8 +5,8 @@
 * necessary offsets and netvars for our knife / skin changer
 * some of these need to be updated after each game update
 */
-#define m_dwLocalPlayer 0xC618AC
-#define m_dwEntityList 0x4C3E674
+#define m_dwLocalPlayer 0xC648AC
+#define m_dwEntityList 0x4C41704
 #define m_hViewModel 0x32DC
 #define m_iViewModelIndex 0x3210
 #define m_flFallbackWear 0x31B0
@@ -255,31 +255,31 @@ int main()
 		WEAPON_KNIFE_STILETTO,
 		WEAPON_KNIFE_WIDOWMAKER };
 
-	DWORD* skinIDs = 0;
 	char** skinNames = 0;
+	DWORD* skinIDs = 0;
 
 	DWORD count = skinsLoad(&skinNames, &skinIDs);
-	if (!count)
+	if (count)
+	{
+		printf("Loaded %d skins from skins.txt.\n", count);
+
+		DWORD knifeID = skinsSelect("Select your knife model:", knifeNames, sizeof(knifeIDs) / sizeof(knifeIDs[0]) - 1);
+		printf("\n");
+		DWORD skinID = skinsSelect("Select your knife skin:", skinNames, count - 1);
+		printf("\n");
+
+		printf("Selected knife: %s | %s\n", knifeNames[knifeID], skinNames[skinID]);
+
+		if (hProcess != INVALID_HANDLE_VALUE)
+		{
+			skinsX(hProcess, dwClient, knifeID, knifeIDs[knifeID], skinIDs[skinID]);
+		}
+	}
+	else
 	{
 		printf("Error loading skins from skins.txt!\n");
-		goto end;
 	}
 
-	printf("Loaded %d skins from skins.txt.\n", count);
-
-	DWORD knifeID = skinsSelect("Select your knife model:", knifeNames, sizeof(knifeIDs) / sizeof(knifeIDs[0]) - 1);
-	printf("\n");
-	DWORD skinID = skinsSelect("Select your knife skin:", skinNames, count - 1);
-	printf("\n");
-
-	printf("Selected knife: %s | %s\n", knifeNames[knifeID], skinNames[skinID]);
-
-	if (hProcess != INVALID_HANDLE_VALUE)
-	{
-		skinsX(hProcess, dwClient, knifeID, knifeIDs[knifeID], skinIDs[skinID]);
-	}
-
-end:
 	if (hProcess) { CloseHandle(hProcess); }
 	if (skinIDs) { free(skinIDs); }
 	if (skinNames) { free(skinNames); }
