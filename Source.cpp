@@ -5,25 +5,25 @@
 * necessary offsets and netvars for our knife / skin changer
 * some of these need to be updated after each game update
 */
-#define m_dwLocalPlayer 0xC648AC
-#define m_dwEntityList 0x4C41704
-#define m_hViewModel 0x32DC
-#define m_iViewModelIndex 0x3210
-#define m_flFallbackWear 0x31B0
-#define m_nFallbackPaintKit 0x31A8
-#define m_iItemIDHigh 0x2FB0
-#define m_iEntityQuality 0x2F9C
-#define m_iItemDefinitionIndex 0x2F9A
-#define m_hActiveWeapon 0x2EE8
-#define m_hMyWeapons 0x2DE8
-#define m_nModelIndex 0x254
+#define m_dwLocalPlayer 0xCB3694
+#define m_dwEntityList 0x4CC3564
+#define m_hViewModel 0x32F8
+#define m_iViewModelIndex 0x3220
+#define m_flFallbackWear 0x31C0
+#define m_nFallbackPaintKit 0x31B8
+#define m_iItemIDHigh 0x2FC0
+#define m_iEntityQuality 0x2FAC
+#define m_iItemDefinitionIndex 0x2FAA
+#define m_hActiveWeapon 0x2EF8
+#define m_hMyWeapons 0x2DF8
+#define m_nModelIndex 0x258
 
 /*
 * offsets between viewmodel indexes located in the sv_precacheinfo list
 * these usually change after new knives are introduced to the game
 */
-#define precache_bayonet_ct 67 // = v_knife_bayonet.mdl - v_knife_default_ct.mdl
-#define precache_bayonet_t 43 // = v_knife_bayonet.mdl - v_knife_default_t.mdl
+#define precache_bayonet_ct 84 // = v_knife_bayonet.mdl - v_knife_default_ct.mdl
+#define precache_bayonet_t 60 // = v_knife_bayonet.mdl - v_knife_default_t.mdl
 
 /*
 * nbq's memory class
