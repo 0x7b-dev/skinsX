@@ -5,8 +5,8 @@
 * necessary offsets and netvars for our knife / skin changer
 * some of these need to be updated after each game update
 */
-#define m_dwLocalPlayer 0xCB3694
-#define m_dwEntityList 0x4CC3564
+#define m_dwLocalPlayer 0xCBD6A4
+#define m_dwEntityList 0x4CCDC3C
 #define m_hViewModel 0x32F8
 #define m_iViewModelIndex 0x3220
 #define m_flFallbackWear 0x31C0
@@ -22,8 +22,8 @@
 * offsets between viewmodel indexes located in the sv_precacheinfo list
 * these usually change after new knives are introduced to the game
 */
-#define precache_bayonet_ct 84 // = v_knife_bayonet.mdl - v_knife_default_ct.mdl
-#define precache_bayonet_t 60 // = v_knife_bayonet.mdl - v_knife_default_t.mdl
+#define precache_bayonet_ct 87 // = v_knife_bayonet.mdl - v_knife_default_ct.mdl
+#define precache_bayonet_t 63 // = v_knife_bayonet.mdl - v_knife_default_t.mdl
 
 /*
 * nbq's memory class
